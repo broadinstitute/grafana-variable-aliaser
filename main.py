@@ -83,4 +83,8 @@ if __name__ == '__main__':
                 database_connection.close()
     finally:
         if TERM_SQLPROXY is not None and bool(TERM_SQLPROXY):
-            print("Terminating sqlproxy")
+            try:
+                print("Terminating sqlproxy")
+                os.system('pkill -SIGTERM cloud_sql_proxy')
+            except:
+                pass
