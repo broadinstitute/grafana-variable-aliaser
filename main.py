@@ -1,4 +1,3 @@
-import distutils.util
 import os
 import time
 
@@ -83,6 +82,6 @@ if __name__ == '__main__':
             if database_connection is not None:
                 database_connection.close()
     finally:
-        if TERM_SQLPROXY is not None and bool(distutils.util.strtobool(TERM_SQLPROXY)):
+        if TERM_SQLPROXY is not None and bool(TERM_SQLPROXY):
             print("Terminating sqlproxy")
             os.system('pkill -SIGTERM cloud_sql_proxy')
