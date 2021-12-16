@@ -84,4 +84,4 @@ if __name__ == '__main__':
     finally:
         if TERM_SQLPROXY is not None and bool(TERM_SQLPROXY):
             print("Terminating sqlproxy")
-            os.system('pkill -SIGTERM cloud_sql_proxy')
+            os.system('sudo pkill -SIGTERM cloud_sql_proxy')
