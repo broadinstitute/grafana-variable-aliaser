@@ -6,8 +6,8 @@ import psycopg2
 from google.cloud import resourcemanager
 from google.cloud import container
 
-WAIT_SQLPROXY = os.getenv('WAIT_SQLPROXY', default='5')
-TERM_SQLPROXY = os.getenv('TERM_SQLPROXY', default='True')
+WAIT_SQLPROXY = os.getenv('WAIT_SQLPROXY', default='0')
+TERM_SQLPROXY = os.getenv('TERM_SQLPROXY', default='False')
 
 DATABASE_HOST = os.getenv('DATABASE_HOST', default='localhost')
 DATABASE_PORT = os.getenv('DATABASE_PORT', default='5432')
