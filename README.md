@@ -21,6 +21,18 @@ What's supported:
 
 You'll need to create the tables manually.
 
+### How do you use it?
+
+Assuming the database this script maintains is properly added as a Grafana datasource, like this:
+
+![Screenshot](./docs/variable-screen.png)
+
+Assuming you have `$cluster` as a variable with the name of the Kubernetes cluster, the above will create a `$project` variable always containing the corresponding project ID.
+
+This is super useful for grabbing GCP metrics associated with your cluster:
+
+![Screenshot](./docs/gcp-query.png)
+
 ### Normal README stuff
 
 This is Python 3.9+. I used a venv that PyCharm gave me but it shouldn't really matter, there's a `requirements.txt`.
