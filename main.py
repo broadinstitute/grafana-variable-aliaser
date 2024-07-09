@@ -22,15 +22,15 @@ if __name__ == '__main__':
     try:
         start = time.time()
 
-        gcp_projects: list[(str, str, str)] = []
-        gcp_clusters: list[(str, str, str, str, str)] = []
+        gcp_projects: dict[str, (str, str, str)] = {}
+        gcp_clusters: dict[str, (str, str, str, str, str)] = {}
 
         gcp_projects_client = resourcemanager.ProjectsClient()
         gcp_clusters_client = container.ClusterManagerClient()
         # For every project we can see:
         for project in gcp_projects_client.search_projects(query=GCP_PROJECTS_QUERY):
             print(f'In project {project.project_id} ({project.name}):')
-            gcp_projects.append((project.project_id, project.display_name, project.name))
+            gcp_projects[project.project_id] = (project.project_id, project.display_name, project.name)
             # If we can list clusters:
             if set(gcp_perms_to_list_cluster) == set(gcp_projects_client.test_iam_permissions(
                     resource=f'projects/{project.project_id}',
@@ -41,7 +41,7 @@ if __name__ == '__main__':
                         parent=f'projects/{project.project_id}/locations/-'
                 ).clusters:
                     print(f'    Found cluster {cluster.name}')
-                    gcp_clusters.append(
+                    gcp_clusters[cluster.name] = (
                         (cluster.name, cluster.location, project.project_id, project.display_name, project.name))
 
         end = time.time()
@@ -66,14 +66,14 @@ if __name__ == '__main__':
             print('Executing SQL for gcp_project_lookup')
             cursor.execute(
                 '''INSERT INTO gcp_project_lookup (project_id, project_display_name, project_api_name) VALUES'''
-                + ', '.join([cursor.mogrify('(%s, %s, %s)', x).decode('utf-8') for x in gcp_projects])
+                + ', '.join([cursor.mogrify('(%s, %s, %s)', x).decode('utf-8') for x in gcp_projects.values()])
                 + '''ON CONFLICT (project_id) DO UPDATE SET
                                (project_id, project_display_name, project_api_name) = 
                                (EXCLUDED.project_id, EXCLUDED.project_display_name, EXCLUDED.project_api_name)''')
             print('Executing SQL for gcp_cluster_lookup')
             cursor.execute(
                 '''INSERT INTO gcp_cluster_lookup (cluster_name, cluster_location, project_id, project_display_name, project_api_name) VALUES'''
-                + ', '.join([cursor.mogrify('(%s, %s, %s, %s, %s)', x).decode('utf-8') for x in gcp_clusters])
+                + ', '.join([cursor.mogrify('(%s, %s, %s, %s, %s)', x).decode('utf-8') for x in gcp_clusters.values()])
                 + '''ON CONFLICT (cluster_name) DO UPDATE SET
                                    (cluster_name, cluster_location, project_id, project_display_name, project_api_name) = 
                                    (EXCLUDED.cluster_name, EXCLUDED.cluster_location, EXCLUDED.project_id, EXCLUDED.project_display_name, EXCLUDED.project_api_name)''')
