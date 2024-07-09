@@ -49,14 +49,18 @@ jobs:
           WITH_V: true
 
       - name: Auth to GCP
-        uses: google-github-actions/setup-gcloud@master
+        id: auth
+        uses: google-github-actions/auth@v2
         with:
-          version: '345.0.0'
-          service_account_email: ${{ secrets.GCP_PUBLISH_EMAIL }}
-          service_account_key: ${{ secrets.GCP_PUBLISH_KEY_B64 }}
+          token_format: access_token
+          credentials_json: ${{ secrets.GCP_PUBLISH_KEY_B64 }}
 
-      - name: Explicitly auth Docker for Artifact Registry
-        run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
+      - name: Login to GAR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GOOGLE_DOCKER_REPOSITORY }}
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
 
       - name: Construct docker image name
         id: image-name
